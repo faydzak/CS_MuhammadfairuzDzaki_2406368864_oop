@@ -2,6 +2,8 @@ package com.CaseStudy.demo.Service;
 import com.CaseStudy.demo.Model.Player;
 import com.CaseStudy.demo.Model.Score;
 import com.CaseStudy.demo.Repository.PlayerRepository;
+import com.CaseStudy.demo.Repository.ScoreRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -14,38 +16,6 @@ public class PlayerService {
     @Autowired
     private PlayerRepository playerRepository;
 
-    public List<Player> getAllPlayers() {
-        return playerRepository.findAll();
-    }
-
-    /**
-     * Retrieves a player by their ID.
-     * @param playerId The UUID of the player.
-     * @return The found Player object.
-     * @throws RuntimeException if no player is found with the given ID.
-     */
-    public Player getPlayerById(UUID playerId) {
-        return playerRepository.findById(playerId)
-                .orElseThrow(() -> new RuntimeException("Player not found with id: " + playerId));
-    }
-
-    /**
-     * Retrieves a player by their username.
-     * @param username The username of the player.
-     * @return The found Player object.
-     * @throws RuntimeException if no player is found with the given username.
-     */
-    public Player getPlayerByUsername(String username) {
-        return playerRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Player not found with username: " + username));
-    }
-
-    /**
-     * Creates a new player.
-     * @param player The player object containing the username.
-     * @return The saved Player object.
-     * @throws RuntimeException if the username already exists.
-     */
     public Player createPlayer(Player player) {
         if (playerRepository.existByUsername(player.getUsername())) {
             throw new RuntimeException("Username already exists: " + player.getUsername());
@@ -53,41 +23,74 @@ public class PlayerService {
         return playerRepository.save(player);
     }
 
+    public Optional<Player> getPlayerById(UUID playerId) {
+        return playerRepository.findById(playerId);
+    }
 
-    public Player updatePlayer(UUID playerId, Player playerUpdates) {
-        // First, get the existing player or throw an exception if not found.
-        Player existingPlayer = getPlayerById(playerId);
+    public Optional<Player> getPlayerByUsername(String username) {
+        return playerRepository.findByUsername(username);
+    }
 
-        if (playerUpdates.getHighScore() != null) {
-            existingPlayer.setHighScore(playerUpdates.getHighScore());
+    public List<Player> getAllPlayers() {
+        return playerRepository.findAll();
+    }
+
+    public Player updatePlayer(UUID playerId, Player updatedPlayer) {
+        Player existingPlayer = playerRepository.findById(playerId)
+                .orElseThrow(() -> new RuntimeException("Player not found with ID: " + playerId));
+
+        // Update only non-null fields
+        if (updatedPlayer.getUsername() != null) {
+            // Check if new username is already taken by another player
+            if (!existingPlayer.getUsername().equals(updatedPlayer.getUsername())
+                    && playerRepository.existByUsername(updatedPlayer.getUsername())) {
+                throw new RuntimeException("Username already exists: " + updatedPlayer.getUsername());
+            }
+            existingPlayer.setUsername(updatedPlayer.getUsername());
         }
-        if (playerUpdates.getTotalCoins() != null) {
-            existingPlayer.setTotalCoins(playerUpdates.getTotalCoins());
+
+        if (updatedPlayer.getHighScore() != null) {
+            existingPlayer.setHighScore(updatedPlayer.getHighScore());
         }
-        if (playerUpdates.getTotalDistance() != null) {
-            existingPlayer.setTotalDistance(playerUpdates.getTotalDistance());
+
+        if (updatedPlayer.getTotalCoins() != null) {
+            existingPlayer.setTotalCoins(updatedPlayer.getTotalCoins());
+        }
+
+        if (updatedPlayer.getTotalDistanceTravelled() != null) {
+            existingPlayer.setTotalDistanceTravelled(updatedPlayer.getTotalDistanceTravelled());
         }
 
         return playerRepository.save(existingPlayer);
     }
 
-    /**
-     * Deletes a player by their ID.
-     * @param playerId The UUID of the player to delete.
-     * @throws RuntimeException if no player is found with the given ID.
-     */
     public void deletePlayer(UUID playerId) {
         if (!playerRepository.existsById(playerId)) {
-            throw new RuntimeException("Player not found with id: " + playerId);
+            throw new RuntimeException("Player not found with ID: " + playerId);
         }
         playerRepository.deleteById(playerId);
     }
 
-    public boolean isUsernameExists(String username) {
-        return playerRepository.existByUsername(username);
+
+    public void deletePlayerByUsername(String username) {
+        Player player = playerRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Player not found with username: " + username));
+        playerRepository.delete(player);
     }
 
-    // --- Leaderboard Methods ---
+    public Player updatePlayerStats(UUID playerId, Integer scoreValue, Integer coinsCollected, Integer distanceTravelled) {
+        Player player = playerRepository.findById(playerId)
+                .orElseThrow(() -> new RuntimeException("Player not found with ID: " + playerId));
+
+        // Update high score if this score is higher
+        player.updateHighScore(scoreValue);
+
+        // Add coins and distance to totals
+        player.addCoins(coinsCollected);
+        player.addDistance(distanceTravelled);
+
+        return playerRepository.save(player);
+    }
 
     public List<Player> getLeaderboardByHighScore(int limit) {
         return playerRepository.findTopPlayersByHighScore(limit);
@@ -99,5 +102,9 @@ public class PlayerService {
 
     public List<Player> getLeaderboardByTotalDistance() {
         return playerRepository.findAllByOrderByTotalDistanceDesc();
+    }
+
+    public boolean isUsernameExists(String username) {
+        return playerRepository.existByUsername(username);
     }
 }

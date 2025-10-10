@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.*;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.Map;
 
@@ -24,21 +25,23 @@ public class PlayerController {
 
     @GetMapping("/{playerId}")
     public ResponseEntity<?> getPlayerById(@PathVariable UUID playerId) {
-        try {
-            Player player = playerService.getPlayerById(playerId);
-            return ResponseEntity.ok(player);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        Optional<Player> player = playerService.getPlayerById(playerId);
+        if (player.isPresent()) {
+            return ResponseEntity.ok(player.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\": \"Player not found with ID: " + playerId + "\"}");
         }
     }
 
     @GetMapping("/username/{username}")
     public ResponseEntity<?> getPlayerByUsername(@PathVariable String username) {
-        try {
-            Player player = playerService.getPlayerByUsername(username);
-            return ResponseEntity.ok(player);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));
+        Optional<Player> player = playerService.getPlayerByUsername(username);
+        if (player.isPresent()) {
+            return ResponseEntity.ok(player.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("{\"error\": \"Player not found with username: " + username + "\"}");
         }
     }
 

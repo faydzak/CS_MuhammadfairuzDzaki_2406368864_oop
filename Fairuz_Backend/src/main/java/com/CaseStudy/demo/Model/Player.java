@@ -10,34 +10,35 @@ import java.time.LocalDateTime;
 public class Player {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID) // Auto-generates a UUID
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "player_id")
     private UUID playerId;
 
-    @Column(name = "username", unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
 
     @Column(name = "high_score")
     private Integer highScore = 0;
 
-    @Column(name = "total_Coins")
+    @Column(name = "total_coins")
     private Integer totalCoins = 0;
 
-    @Column(name = "total_distance")
-    private Integer totalDistance = 0;
-    public Player() {
-    }
+    @Column(name = "total_distance_travelled")
+    private Integer totalDistanceTravelled = 0;
+
     @CreationTimestamp
-    @Column(name = "cratedAt", updatable = false)
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    // Default constructor
+    public Player() {}
 
     // Constructor with username
     public Player(String username) {
         this.username = username;
     }
 
-    // --- Getters and Setters ---
-
+    // Getters and Setters
     public UUID getPlayerId() {
         return playerId;
     }
@@ -54,7 +55,6 @@ public class Player {
         this.username = username;
     }
 
-    // Here is the getHighScore() method you mentioned
     public Integer getHighScore() {
         return highScore;
     }
@@ -71,13 +71,12 @@ public class Player {
         this.totalCoins = totalCoins;
     }
 
-    // Here is the getTotalDistance() method you mentioned
-    public Integer getTotalDistance() {
-        return totalDistance;
+    public Integer getTotalDistanceTravelled() {
+        return totalDistanceTravelled;
     }
 
-    public void setTotalDistance(Integer totalDistance) {
-        this.totalDistance = totalDistance;
+    public void setTotalDistanceTravelled(Integer totalDistanceTravelled) {
+        this.totalDistanceTravelled = totalDistanceTravelled;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -88,8 +87,7 @@ public class Player {
         this.createdAt = createdAt;
     }
 
-    // --- Business Methods ---
-
+    // Business methods
     public void updateHighScore(Integer newScore) {
         if (newScore > this.highScore) {
             this.highScore = newScore;
@@ -101,7 +99,7 @@ public class Player {
     }
 
     public void addDistance(Integer distance) {
-        this.totalDistance += distance;
+        this.totalDistanceTravelled += distance;
     }
 }
 
