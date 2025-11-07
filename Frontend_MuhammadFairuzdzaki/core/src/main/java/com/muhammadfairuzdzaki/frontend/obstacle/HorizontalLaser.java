@@ -6,23 +6,27 @@ import com.badlogic.gdx.math.Vector2;
 
 public class HorizontalLaser extends BaseObstacle {
 
-    public HorizontalLaser(Vector2 startPosition, int length){
-    }
-    @Override
-    public void initialize(Vector2 startPosition, int length){
-
-    }
-    @Override
-    public void updateCollider(){
-        collider = new Rectangle(position.x, position.y);
-    }
-    @Override
-    public void drawShape(ShapeRenderer shapeRenderer){
-
-    }
-    @Override
-    public float getRenderWidth(){
-
+    public HorizontalLaser(Vector2 startPosition, int length) {
+        super(startPosition, length);
     }
 
+    @Override
+    public void initialize(Vector2 startPosition, int length) {
+        super.initialize(startPosition, length);
+    }
+
+    @Override
+    protected void updateCollider() {
+        collider.set(position.x, position.y, length, WIDTH);
+    }
+
+    @Override
+    protected void drawShape(ShapeRenderer shapeRenderer) {
+        shapeRenderer.rect(position.x, position.y, length, WIDTH);
+    }
+
+    @Override
+    public float getRenderWidth() {
+        return length;
+    }
 }

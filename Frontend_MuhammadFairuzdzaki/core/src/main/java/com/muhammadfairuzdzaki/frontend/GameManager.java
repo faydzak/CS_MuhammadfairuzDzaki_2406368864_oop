@@ -1,33 +1,24 @@
 package com.muhammadfairuzdzaki.frontend;
 
 public class GameManager {
-
-    private static GameManager instance;
-
+    private static final GameManager instance = new GameManager();
     private int score;
-    private boolean gameActive;
 
-    private GameManager(){
-        score = 0;
-        gameActive = false;
-    }
-    public static GameManager getInstance(){
-        if (instance == null){
-            instance = new GameManager();
-        }
+    private GameManager() {}
+
+    public static GameManager getInstance() {
         return instance;
     }
-    public void startGame(){
+
+    public void startGame() {
         score = 0;
-        gameActive = true;
-        System.out.println("Game Started!");
     }
-    public void setScore(int newScore){
-        if (gameActive){
-            this.score = newScore;
-        }
-    }
-    public int getScore(){
+
+    public int getScore() {
         return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 }
