@@ -3,76 +3,83 @@ package com.muhammadfairuzdzaki.frontend;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class Main extends ApplicationAdapter {
 
     private ShapeRenderer shapeRenderer;
-    private Rectangle box;
-    private Ground ground;
-    private player player;
-    private GameManager gameManager;
-    private OrthographicCamera camera;
-    private float cameraoffset = 0.21f;
+    private ShapeFactory shapeFactory;
+    private ShapePool shapePool;
+    private ArrayList<Shape> activeShapes;
 
+    private Random random;
 
     @Override
     public void create() {
         shapeRenderer = new ShapeRenderer();
+        shapePool = new ShapePool();
+        shapeFactory = new ShapeFactory(shapePool);
+        activeShapes = new ArrayList<>();
+        random = new Random();
 
-        gameManager = GameManager.getInstance();
-
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.setToOrtho(false);
-
-        player = new player(new Vector2(100, Gdx.graphics.getHeight() / 2f));
-
-        ground = new Ground();
-
-        gameManager.startGame();
-
+        System.out.println("Press 1=Circle, 2=Square, R=Release");
     }
 
     @Override
     public void render() {
-        float delta = Gdx.graphics.getDeltaTime();
-        update(delta);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+            createShape("Circle");
+        }
 
-        ScreenUtils.clear(0.1f, 0.1f, 0.2f, 1f);
-        shapeRenderer.setProjectionMatrix(camera.combined);
+        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+            createShape("Square");
+        }
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+            releaseAllShapes();
+        }
+
+        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        ground.renderShape(shapeRenderer);
-        player.renderShape(shapeRenderer);
+        for (Shape shape : activeShapes) {
+            shape.render(shapeRenderer);
+        }
 
         shapeRenderer.end();
     }
-    private void update(float delta){
-        boolean isFlying = Gdx.input.isKeyPressed(Input.Keys.SPACE);
 
-        player.update(delta, isFlying);
-        updateCamera(delta);
-        ground.update(camera.position.x);
+    private void createShape(String type) {
+        if (activeShapes.size() >= 3) {
+            System.out.println("Maximum 3 shapes active!");
+            return;
+        }
 
-        float ceilingY = camera.position.y + camera.viewportHeight / 2f;
-        player.checkBoundries(ground, ceilingY);
+        Shape shape = shapeFactory.createShape(type);
 
-        int newScore = (int) player.getDistanceTraveled();
-        if (newScore > gameManager.getScore()){
-            gameManager.setScore(newScore);
+        if (shape != null) {
+            float x = random.nextFloat() * (Gdx.graphics.getWidth() - 100) + 50;
+            float y = random.nextFloat() * (Gdx.graphics.getHeight() - 100) + 50;
+            shape.setPosition(x, y);
+
+            activeShapes.add(shape);
         }
     }
-    private void updateCamera(float delta){
-        float cameraFocus = player.getPosition().x + (Gdx.graphics.getWidth() * cameraoffset);
-        camera.position.x = cameraFocus;
-        camera.update();
+
+    private void releaseAllShapes() {
+        for (Shape shape : activeShapes) {
+            shapePool.release(shape);
+        }
+
+        activeShapes.clear();
+
+        System.out.println("All shapes returned to pool");
     }
+
     @Override
     public void dispose() {
         shapeRenderer.dispose();
