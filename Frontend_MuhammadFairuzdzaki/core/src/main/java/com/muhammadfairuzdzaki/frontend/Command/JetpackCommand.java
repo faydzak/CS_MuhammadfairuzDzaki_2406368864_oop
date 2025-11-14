@@ -1,0 +1,17 @@
+package com.muhammadfairuzdzaki.frontend.Command;
+
+import com.muhammadfairuzdzaki.frontend.Player;
+
+public abstract class JetpackCommand implements Command {
+    private Player player;
+    public JetpackCommand(Player player){
+        this.player = player;
+    }
+    @Override
+    public void execute(){
+        if (){
+            player.fly();
+
+        }
+    }
+}
