@@ -12,6 +12,8 @@ public class RestartCommand implements Command {
     }
     @Override
     public void execute(){
+        player.reset();
+        gameManager.setScore(0);
 
     }
     @Override

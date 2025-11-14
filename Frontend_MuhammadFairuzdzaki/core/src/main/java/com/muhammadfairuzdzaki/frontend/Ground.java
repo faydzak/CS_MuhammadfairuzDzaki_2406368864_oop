@@ -1,19 +1,27 @@
 package com.muhammadfairuzdzaki.frontend;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.Gdx;
 
 public class Ground {
-    private float topY = 50f;
+    private static final float HEIGHT = 100f;
+    private float x;
+    private float width = 5000f;
 
-    public void update(float cameraX) {
+    public Ground() {
+        this.x = 0;
     }
 
-    public void render(ShapeRenderer shapeRenderer) {
-        shapeRenderer.rect(0, 0, Gdx.graphics.getWidth() * 10, topY);
+    public void update(float cameraX) {
+        this.x = cameraX - width / 2;
+    }
+
+    public void renderShape(ShapeRenderer shapeRenderer) {
+        shapeRenderer.setColor(Color.GREEN);
+        shapeRenderer.rect(x, 0, width, HEIGHT);
     }
 
     public float getTopY() {
-        return topY;
+        return HEIGHT;
     }
 }

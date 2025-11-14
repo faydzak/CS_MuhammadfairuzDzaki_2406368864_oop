@@ -3,11 +3,11 @@ package com.muhammadfairuzdzaki.frontend.obstacle;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.muhammadfairuzdzaki.frontend.player;
+import com.muhammadfairuzdzaki.frontend.Player;
 
 public class HomingMissile extends BaseObstacle {
 
-    private player target;
+    private Player target;
     private Vector2 velocity;
     private float speed = 200f;
     private float width = 40f;
@@ -27,7 +27,7 @@ public class HomingMissile extends BaseObstacle {
         this.target = null;
     }
 
-    public void setTarget(player target) {
+    public void setTarget(Player target) {
         this.target = target;
     }
 
