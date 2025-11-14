@@ -16,8 +16,5 @@ public class RestartCommand implements Command {
         gameManager.setScore(0);
 
     }
-    @Override
-    public void execute(){
 
-    }
 }
