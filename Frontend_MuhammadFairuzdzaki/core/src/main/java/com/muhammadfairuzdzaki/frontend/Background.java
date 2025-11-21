@@ -23,6 +23,10 @@ public class Background {
         this.currentCameraX = cameraX;
     }
 
+    public void render(SpriteBatch batch) {
+        render(batch, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    }
+
     public void render(SpriteBatch batch, float screenWidth, float screenHeight) {
         float scale = screenHeight / this.height;
         float scaledWidth = this.width * scale;
@@ -34,6 +38,7 @@ public class Background {
             float drawX = (startTile + i) * scaledWidth;
             batch.draw(backgroundRegion, drawX, 0, scaledWidth, scaledHeight);
         }
+
     }
 
     public void dispose() {

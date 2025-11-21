@@ -1,34 +1,32 @@
 package com.muhammadfairuzdzaki.frontend.Observer;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class ScoreUIObserver implements Observer {
-    private BitmapFont font;
-    private SpriteBatch batch;
+    private final BitmapFont font;
+    private int currentScore = 0; // Store score from update (optional)
 
     public ScoreUIObserver() {
         font = new BitmapFont();
         font.setColor(Color.WHITE);
-        batch = new SpriteBatch();
+        font.getData().setScale(2);
     }
 
     @Override
     public void update(int score) {
-        System.out.println("Score updated: " + score);
+        this.currentScore = score;
     }
-
-    public void render(int score, float cameraX, float cameraY, float screenWidth, float screenHeight) {
+    public void render(SpriteBatch batch, int score) {
         batch.begin();
-        float drawX = cameraX - screenWidth / 2f + 20;
-        float drawY = cameraY + screenHeight / 2f - 20;
-        font.draw(batch, "Score: " + score, drawX, drawY);
+        String scoreText = "Distance: " + score + " m";
+        font.draw(batch, scoreText, 20, Gdx.graphics.getHeight() - 20);
         batch.end();
     }
 
     public void dispose() {
-        if (font != null) font.dispose();
-        if (batch != null) batch.dispose();
+        font.dispose();
     }
 }

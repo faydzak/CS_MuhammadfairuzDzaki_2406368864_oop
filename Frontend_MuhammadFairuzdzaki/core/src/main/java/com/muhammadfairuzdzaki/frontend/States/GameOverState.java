@@ -10,21 +10,25 @@ public class GameOverState implements GameState {
     private final GameStateManager gsm;
 
 
-    public GameOverState(){
+    public GameOverState(GameStateManager gsm){
         this.font = new BitmapFont();
-        this.gsm =  new GameStateManager();
+        this.gsm =  gsm;
 
     }
+    @Override
     public void update(float delta){
         if (Gdx.input.isButtonJustPressed(Input.Keys.SPACE)){
-            gsm.setState(new PlayingState(gsm));
+            gsm.set(new PlayingState(gsm));
         }
     }
-    public void render(SpriteBatch batch){
-        font.draw(batch,"GAME OVER and PRESS STATE TO RESTART");
-        Gdx.graphics.getWidth();
-        Gdx.graphics.getHeight();
+    @Override
+    public void render(SpriteBatch batch) {
+        batch.begin();
+        font.draw(batch, "GAME OVER", Gdx.graphics.getWidth() / 2f - 50, Gdx.graphics.getHeight() / 2f + 20);
+        font.draw(batch, "Press SPACE to restart", Gdx.graphics.getWidth() / 2f - 80, Gdx.graphics.getHeight() / 2f - 20);
+        batch.end();
     }
+    @Override
     public void dispose(){
         font.dispose();
     }
