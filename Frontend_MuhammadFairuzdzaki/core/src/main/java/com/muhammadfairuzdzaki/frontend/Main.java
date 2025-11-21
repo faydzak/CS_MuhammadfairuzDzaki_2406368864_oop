@@ -16,6 +16,8 @@ import com.muhammadfairuzdzaki.frontend.factories.ObstacleFactory;
 import com.muhammadfairuzdzaki.frontend.Observer.ScoreUIObserver;
 import com.muhammadfairuzdzaki.frontend.obstacle.BaseObstacle;
 import com.muhammadfairuzdzaki.frontend.obstacle.HomingMissile;
+import com.muhammadfairuzdzaki.frontend.States.GameStateManager;
+import com.muhammadfairuzdzaki.frontend.States.playingState;
 
 public class Main extends Game {
     private ShapeRenderer shapeRenderer;
@@ -189,20 +191,13 @@ public class Main extends Game {
         }
     }
 
-    @Override
-    public void dispose() {
-        shapeRenderer.dispose();
-        if (spriteBatch != null) {
-            spriteBatch.dispose();
-        }
-        obstacleFactory.releaseAllObstacles();
-
-        if (scoreUIObserver != null) {
-            scoreUIObserver.dispose();
-        }
-
-        if (background != null) {
-            background.dispose();
-        }
+    @Override public void create() {
+        spriteBatch = new SpriteBatch();
+        gsm = new GameStateManager();
+        gsm.push(new PlayingState(gsm));
     }
-}
+    @Override public void render() {
+        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f); gsm.update(Gdx.graphics.getDeltaTime());
+        gsm.render(spriteBatch); }
+    @Override public void dispose() {
+        super.dispose(); gsm.pop(); // Dispose the current state
