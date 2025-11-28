@@ -2,10 +2,13 @@ package com.muhammadfairuzdzaki.frontend;
 
 import com.muhammadfairuzdzaki.frontend.Observer.Observer;
 import com.muhammadfairuzdzaki.frontend.Observer.ScoreManager;
+import com.muhammadfairuzdzaki.frontend.service.BackendService;
 
 public class GameManager {
     private static GameManager instance;
     private ScoreManager scoreManager;
+    private BackendService backendService;
+    private String get
 
     private GameManager() {
         scoreManager = new ScoreManager();
