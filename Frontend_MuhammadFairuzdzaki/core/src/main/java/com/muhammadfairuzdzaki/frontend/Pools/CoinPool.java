@@ -1,12 +1,24 @@
 package com.muhammadfairuzdzaki.frontend.Pools;
-import com.badlogic.gdx.math.Vector2;
+
 import com.muhammadfairuzdzaki.frontend.Coin;
+import com.badlogic.gdx.math.Vector2;
 
 public class CoinPool extends ObjectPool<Coin> {
 
-    CoinPool createObject = new Coin(new Vector2(0, 0));
-    CoinPool resetObject =  Coin.set(Active(false));
+    @Override
+    protected Coin createObject() {
+        return new Coin(new Vector2(0, 0));
+    }
 
+    @Override
+    protected void resetObject(Coin coin) {
+        coin.setActive(false);
+    }
 
-
+    public Coin obtain(float x, float y) {
+        Coin coin = super.obtain();
+        coin.setPosition(x, y);
+        coin.setActive(true);
+        return coin;
+    }
 }

@@ -1,61 +1,54 @@
 package com.muhammadfairuzdzaki.frontend.obstacle;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public abstract class BaseObstacle {
-
     protected Vector2 position;
     protected Rectangle collider;
-    protected float length;
-    protected final float WIDTH = 10f;
-    protected boolean active = false;
+    protected float width = 50f;
+    protected float height = 50f;
+    protected float speed = 300f;
+    protected boolean active;
 
-    public BaseObstacle(Vector2 startPosition, int length) {
-        this.position = new Vector2(startPosition);
-        this.length = length;
-        this.collider = new Rectangle();
-        updateCollider();
+    public BaseObstacle(float spawnX, float spawnY) {
+        this.position = new Vector2(spawnX, spawnY);
+        this.collider = new Rectangle(position.x, position.y, width, height);
+        this.active = true;
     }
 
-    public void initialize(Vector2 startPosition, int length) {
-        this.position.set(startPosition);
-        this.length = length;
-        updateCollider();
+    public void update(float delta) {
+        position.x -= speed * delta;
+        collider.setPosition(position.x, position.y);
     }
 
-    public void render(ShapeRenderer shapeRenderer) {
+    public void renderShape(ShapeRenderer shapeRenderer) {
         if (!active) return;
-        drawShape(shapeRenderer);
+        shapeRenderer.rect(collider.x, collider.y, collider.width, collider.height);
     }
 
-    public boolean isColliding(Rectangle playerCollider) {
-        return active && collider.overlaps(playerCollider);
+    public void render(SpriteBatch batch) {
+    }
+
+    public void setInactive() {
+        this.active = false;
     }
 
     public boolean isActive() {
         return active;
     }
 
-    public boolean isOffScreenCamera(float cameraLeftEdge) {
-        return (position.x + getRenderWidth()) < cameraLeftEdge;
+    public Rectangle getCollider() {
+        return collider;
     }
 
-    protected abstract void updateCollider();
-    protected abstract void drawShape(ShapeRenderer shapeRenderer);
-    public abstract float getRenderWidth();
-
-    public void setActive(boolean active) {
-        this.active = active;
+    public float getPositionX() {
+        return position.x;
     }
 
-    public void setPosition(float x, float y) {
-        this.position.set(x, y);
-        updateCollider();
-    }
-
-    public Vector2 getPosition() {
-        return position;
+    public boolean isTargetingPlayer() {
+        return false;
     }
 }
